@@ -35,7 +35,10 @@ readEnv <- function(targetDir, maxTsteps){
   return(envDF)
 }
 resourcesEnvironment<-readEnv(environment_dir, timesteps)
-resourcesEnvironment$z <- 1- resourcesEnvironment$z
+#normalization
+normalize <- function(x){ return((x- min(x)) /(max(x)-min(x)))}
+
+resourcesEnvironment$z <- normalize(1 - resourcesEnvironment$z) #invert then normalize
 
 #Fish parameters 
 personalSpace <- 0.1 #this is what defines the zone of repulsion, which is a sphere (or circle) with this as the radius
@@ -44,7 +47,7 @@ delta_a <- 0.2 #distance between zone of orientation and zone of attraction
 alpha <- 0.9*pi #field of perception in rads (2*pi~=6.28 rads = 360 deg)
 theta <- 1.5 #turning rate (in rads)
 min_speed <- 1 #minimum movement speed
-max_speed <- 16 #maximum movement speed
+max_speed <- 10 #maximum movement speed
 sigma <- 0.02 #random angle change (in rads) 
 
 #agents are each defined by a position and velocity at each time point

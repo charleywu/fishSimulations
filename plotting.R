@@ -24,6 +24,7 @@ p <- ggplot(data=resourcesEnvironment,  aes(x = x, y = y, fill = z)) +
   geom_raster()+
   transition_time(t) +
   theme_classic()+
+  labs(title = "T: {frame_time}") +
   #scale_fill_distiller(palette = "Spectral", breaks = breaks, labels = NULL, name = "Reward")+
   scale_fill_gradient(low = "white", high = "black")+
   geom_image( data=Data,  inherit.aes = FALSE,  aes( x = X, y = Y, frame = t, image="fish_icon.png"), size=.05 , by="height")+
