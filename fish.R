@@ -3,7 +3,6 @@
 #house cleaning
 rm(list=ls())
 
-setwd('schoolingSimulations')
 
 #load packages
 packages <- c('ggplot2', 'gganimate', 'rapport', 'ppls', 'bio3d')
@@ -13,17 +12,30 @@ lapply(packages, require, character.only=TRUE)
 ###simulation parameters
 #Environment parameters
 agents <- 20
-timesteps <- 200
-minVal <- -1 #initial range of environment
-maxVal <- 1
+#timesteps <- 200
+timesteps <- 199
+minVal <- 1 #initial range of environment
+maxVal <- 100
 dimensions <- 2
-environment_rangeX <- 101
-environment_rangeY <- 101
+environment_rangeX <- 100
+environment_rangeY <- 100
 environmentCoordinates <- seq(minVal,maxVal, length=environment_rangeX)
-environment_number <- 4
-environment_lambda <- 2
-environment_sigma <- 0.01
-environment_exp <- 2
+environment_dir <- 'light_fields/envs/1-1en01/'
+
+#load environment
+readEnv <- function(targetDir, maxTsteps){
+  envDF <- data.frame()
+  gridCoords <- expand.grid(x=seq(minVal,maxVal), y = seq(minVal,maxVal))
+  for (t in seq(0,maxTsteps)){
+    file <- paste0(targetDir,'t', t,'.csv')
+    reward <- as.vector(as.matrix((read.csv(file, header=F,  row.names=NULL))))
+    tStep <- data.frame(x = gridCoords$x, y = gridCoords$y, z = reward, t = t )
+    envDF <- rbind(envDF,tStep )
+  }
+  return(envDF)
+}
+resourcesEnvironment<-readEnv(environment_dir, timesteps)
+resourcesEnvironment$z <- 1- resourcesEnvironment$z
 
 #Fish parameters 
 personalSpace <- 0.1 #this is what defines the zone of repulsion, which is a sphere (or circle) with this as the radius
@@ -31,8 +43,8 @@ delta_o <- 0.2 #distance between zone of repulsion and end of zone of orientatio
 delta_a <- 0.2 #distance between zone of orientation and zone of attraction
 alpha <- 0.9*pi #field of perception in rads (2*pi~=6.28 rads = 360 deg)
 theta <- 1.5 #turning rate (in rads)
-min_speed <- -0.04 #minimum movement speed
-max_speed <- 0.16 #maximum movement speed
+min_speed <- 1 #minimum movement speed
+max_speed <- 16 #maximum movement speed
 sigma <- 0.02 #random angle change (in rads) 
 
 #agents are each defined by a position and velocity at each time point
@@ -46,9 +58,6 @@ speeds <- array(min_speed, dim=c(agents, 1, timesteps+1)) #3-dimensional matrix 
 zor <- array(0, dim=c(agents, agents, timesteps+1)) #zone of repulsion
 zoa <- array(0, dim=c(agents, agents, timesteps+1)) #zone of attraction
 zoo <- array(0, dim=c(agents, agents, timesteps+1)) #zone of orientation
-
-#load environment
-resourcesEnvironment<-get(load(paste("data/Environment_lambda_ ",environment_lambda," _sigma_ ",environment_sigma," _exp_ ",environment_exp," . ",environment_number," .Rdata",sep="")))
 
 
 ################################################################################################################################################################################################
@@ -272,3 +281,29 @@ for (t in 1:timesteps){ #plot(position[,,t])
   #debug
   print(t)
 }
+
+
+### Data formatting ###
+Data <- data.frame(t = numeric(), fish = numeric(), X = numeric(), Y = numeric(), orientation = numeric())
+
+#Reformat into dataframe
+for (time in (1:(timesteps))){
+  singleData <- as.data.frame(position[,,time])
+  colnames(singleData)<- c('X', 'Y')
+  for (r in (1:agents)){
+    singleData$orientation[r] <- atan2(velocity[r,2,time], velocity[r,1,time]) #calculate orientation in degrees
+    singleData$changeDirection[r] <- atan2(direction[r,2,time], direction[r,1,time]) #calculate changeDirection in degrees
+    singleData$thetaAngle[r] <- thetas[r,1,time] #theta angle
+  }
+  singleData$X = as.numeric(singleData$X)
+  singleData$Y = as.numeric(singleData$Y)
+  singleData$orientation <- as.numeric(singleData$orientation)
+  singleData$changeDirection <- as.numeric(singleData$changeDirection)
+  singleData$thetaAngle <- as.numeric(singleData$thetaAngle)
+  singleData$fish= sequence(agents)
+  singleData$t = time
+  
+  Data <- rbind(Data, singleData)
+}#summary(Data)
+
+saveRDS(Data, 'fishSim.RDS')

@@ -1,0 +1,28 @@
+#!/bin/sh
+
+
+for (( i = 1; i <= 20 ; i+=1 ))
+    do 
+
+    rm -rf output/$i
+    mkdir output/$i
+    ./pnggrad $i
+    mogrify -format jpg output/$i/*.png
+
+    moviename="noise01-seed$(echo $i).avi"
+
+
+
+#mencoder -ovc copy start.avi end.avi -o complete.avi
+
+#    mencoder "mf://output/$i/*.jpg" -mf fps=8 -o $moviename -ovc copy -copyopts vcodec=msmpeg4v2
+    ffmpeg -r 8 -i `echo "output/$i/f%05d.jpg"` -vcodec msmpeg4v2 -an -sameq  -qmin 4  $moviename
+    rm output/$i/*.jpg
+done
+
+
+mencoder -ovc copy ../break.avi ../break.avi noise01-seed1.avi ../break.avi noise01-seed2.avi ../break.avi noise01-seed3.avi ../break.avi noise01-seed4.avi -o noise01day1.avi
+mencoder -ovc copy ../break.avi ../break.avi noise01-seed5.avi ../break.avi noise01-seed6.avi ../break.avi noise01-seed7.avi ../break.avi noise01-seed8.avi -o noise01day2.avi
+mencoder -ovc copy ../break.avi ../break.avi noise01-seed9.avi ../break.avi noise01-seed10.avi ../break.avi noise01-seed11.avi ../break.avi noise01-seed12.avi -o noise01day3.avi
+mencoder -ovc copy ../break.avi ../break.avi noise01-seed13.avi ../break.avi noise01-seed14.avi ../break.avi noise01-seed15.avi ../break.avi noise01-seed16.avi -o noise01day4.avi
+mencoder -ovc copy ../break.avi ../break.avi noise01-seed17.avi ../break.avi noise01-seed18.avi ../break.avi noise01-seed19.avi ../break.avi noise01-seed20.avi -o noise01day5.avi
