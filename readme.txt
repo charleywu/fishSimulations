@@ -1,14 +1,9 @@
-The environments' data used in the simulation is at the format .json and can be found at the subdirectory "environments".
+The fish model was programmed by Charley Wu and Imen Bouhlel based on Couzin et al. 2002. The light field environments are from Berdahl et al (2010), and we're grateful to Peter Krafft for providing us his Python implementation. 
 
 Steps:
 
-1) Run environmentGenerator.py to generate enironments, which are then saved as json files in the subdirectory "environments".
+1) Run `light_fields/main.py` generate enironments, which are then saved as csv files in the subdirectory `light_fields/envs`
 
-2) run "gpEnvironmentDataAndPlotsGeneration.R" script in order to interpolate the existing environments to the desired spatial and temporal dimensions, and to convert and save them on a .Rdata format.
+2) Run `fish.R` in order to load an environment and run the simulation. The output is saved under `fishSim.RDS`
 
-3) run "fish.R" script in order to create the simualtion data
-
-4) run "plotting.R" in order to plot the animation corresponding to the simulation data
-
-
- Note, that while similar to the environments used in Berdahl et al (2010), we had difficulty in exactly replicating the environments used in the paper based on the information provided in the supplementary materials. (Specifically, it seems like there is a vector missing from the first term of Eq. 7 and we couldn't consistently arrive at initial state for Eq. 14). If anyone has code for these environments, we would be very happy if you contacted us. These environments represent spatially and temporally correlated environments sampled from a Gaussian Process prior, using an RBF kernel for the light prfile composed with a white noise kernel for the noise component. Due to scalability, we generated a smaller environment, which was then interpolated in step 2 to construct the 100 x 100 x 100 environment
+3) Run `plotting.R` in order to plot the animation corresponding to the simulation data (saved in `gifs/`)
