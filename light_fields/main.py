@@ -3,7 +3,7 @@ import numpy as np
 from noise import Noise
 from multiprocessing import Process
 
-#python -i main.py ~/git/socialLearning/light_fields/envs
+#python -i main.py ~/git/fishSimulations/light_fields/envs
 
 
 # GNU Public Licence Copyright (c) Peter Krafft
